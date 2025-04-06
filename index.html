@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <link href="https://fonts.googleapis.com/css2?family=Thasadith&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body {
+      font-family: 'Thasadith', sans-serif;
+      background-color: #f4f6f8;
+      padding: 30px;
+      margin: 0;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    .input-group {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      padding: 8px;
+      width: 100%;
+      max-width: 500px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-family: 'Thasadith', sans-serif;
+      box-sizing: border-box;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background-color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+      cursor: pointer;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+    .caption {
+      padding: 12px;
+      font-size: 14px;
+      text-align: center;
+      background-color: #fafafa;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 12px;
+      text-align: center;
+      position: relative;
+    }
+    .modal-content img {
+      max-width: 100%;
+      max-height: 70vh;
+      border-radius: 10px;
+    }
+    .modal .close {
+      position: absolute;
+      top: 10px; right: 20px;
+      font-size: 28px;
+      color: #aaa;
+      cursor: pointer;
+    }
+    .modal .download-btn,
+    .modal .delete-btn,
+    .modal .close-btn {
+      margin-top: 15px;
+      font-family: 'Thasadith', sans-serif;
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    .modal .download-btn {
+      background-color: #2e7d32;
+      color: white;
+    }
+    .modal .download-btn:hover {
+      background-color: #1b5e20;
+    }
+    .modal .delete-btn {
+      background-color: #c62828;
+      color: white;
+      border: none;
+      margin-left: 10px;
+    }
+    .modal .delete-btn:hover {
+      background-color: #8e0000;
+    }
+    .modal .close-btn {
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      margin-left: 10px;
+    }
+    .modal .close-btn:hover {
+      background-color: #5a6268;
+    }
+    @media (max-width: 600px) {
+      .input-group {
+        padding: 0 10px;
+      }
+      .gallery {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      }
+      h1 {
+        font-size: 22px;
+      }
+      .caption {
+        font-size: 12px;
+      }
+      html, body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+body {
+  flex: 1;
+}
+footer {
+  margin-top: auto;
+}
+
+    }
+  </style>
+</head>
+<body>
+  <h1><i class="fa-solid fa-image"></i> MyDrive Gallery</h1>
+
+  <div class="input-group">
+    <input type="text" id="folderInput" placeholder="ใส่ Folder ID ที่นี่" onchange="loadFolder()" />
+  </div>
+
+  <div class="gallery" id="gallery"></div>
+
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <img id="modalImage" src="">
+      <br>
+      <a id="downloadBtn" class="download-btn" href="#" target="_blank">
+        <i class="fa-solid fa-download"></i> ดาวน์โหลด
+      </a>
+      <button id="deleteBtn" class="delete-btn">
+        <i class="fa-solid fa-trash"></i> ลบ
+      </button>
+      <button class="close-btn" onclick="closeModal()">
+        <i class="fa-solid fa-xmark"></i> ปิด
+      </button>
+    </div>
+  </div>
+<footer style="background-color: #f8f9fa; text-align: center; padding: 20px; margin-top: 40px; font-family: 'Thasadith', sans-serif;">
+  <div>
+    <p style="margin-bottom: 10px;">พัฒนาโดย : <strong>ครูนิด ศิษย์หลวงพ่อเสือ cr.ครูณัฎฐชัย มาตา</strong></p>
+    <div style="display: flex; justify-content: center; gap: 20px; align-items: center; font-size: 20px;">
+      <a href="#" title="Facebook">
+        <i class="fab fa-facebook-f" style="color: #3b5998;"></i>
+      </a>
+      <a href="#" title="Line">
+        <i class="fab fa-line" style="color: #00c300;"></i>
+      </a>
+      <a href="#" title="YouTube">
+        <i class="fab fa-youtube" style="color: #FF0000;"></i>
+      </a>
+      <a href="#" title="Instagram">
+        <i class="fab fa-instagram" style="color: #E1306C;"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+
+
+  <script>
+    let currentFolderId = '';
+
+    window.onload = function () {
+      google.script.run.withSuccessHandler(function(savedId) {
+        if (savedId) {
+          document.getElementById('folderInput').value = savedId;
+          currentFolderId = savedId;
+          refreshGallery();
+        }
+      }).getUserFolderId();
+    };
+
+    function loadFolder() {
+      currentFolderId = document.getElementById('folderInput').value.trim();
+      localStorage.setItem('savedFolderId', currentFolderId);
+      google.script.run.saveUserFolderId(currentFolderId);
+      refreshGallery();
+    }
+
+    function refreshGallery() {
+      if (!currentFolderId) return;
+
+      google.script.run.withSuccessHandler(function(html) {
+        document.getElementById("gallery").innerHTML = html;
+      }).getGalleryHtml(currentFolderId);
+    }
+
+    function openModal(imageSrc, name, downloadUrl, fileId) {
+      document.getElementById('modalImage').src = imageSrc;
+      const dl = document.getElementById('downloadBtn');
+      dl.href = downloadUrl;
+      dl.download = name;
+      document.getElementById('modal').style.display = 'flex';
+      document.getElementById('deleteBtn').onclick = function () {
+        Swal.fire({
+          title: 'คุณแน่ใจหรือไม่?',
+          text: "ลบแล้วจะไม่สามารถกู้คืนได้",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'ใช่, ลบเลย!',
+          cancelButtonText: 'ยกเลิก'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            google.script.run
+              .withSuccessHandler(() => {
+                closeModal();
+                refreshGallery();
+                Swal.fire({
+                  icon: 'success',
+                  title: 'ลบสำเร็จ',
+                  text: 'ไฟล์ถูกลบเรียบร้อยแล้ว!',
+                  showConfirmButton: false,
+                  timer: 1500
+                });
+              })
+              .withFailureHandler(() => {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'เกิดข้อผิดพลาด',
+                  text: 'ไม่สามารถลบไฟล์ได้ กรุณาลองใหม่',
+                });
+              })
+              .deleteFile(fileId);
+          }
+        });
+      };
+    }
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById('modal');
+      if (event.target === modal) closeModal();
+    }
+
+    setInterval(() => {
+      if (currentFolderId) refreshGallery();
+    }, 5000);
+  </script>
+</body>
+</html>
